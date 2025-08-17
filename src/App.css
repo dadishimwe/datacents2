@@ -79,7 +79,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
@@ -362,7 +362,8 @@
 
 /* Code-like Text Styling */
 .code-text {
-  @apply font-mono text-sm bg-muted/50 px-2 py-1 rounded;
+  @apply font-mono text-sm px-2 py-1 rounded;
+  background-color: rgba(51, 65, 85, 0.5);
   border: 1px solid rgba(241, 245, 249, 0.1);
 }
 
