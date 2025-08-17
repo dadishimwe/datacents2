@@ -15,6 +15,7 @@ import ErrorBoundary from './components/ErrorBoundary'
 import { useParallax } from './hooks/use-parallax'
 
 function App() {
+  console.log('App component rendering...')
   const parallaxRef = useParallax()
 
   return (
