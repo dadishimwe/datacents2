@@ -5,7 +5,7 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/datacents2/', // Add this for GitHub Pages
+  base: '/', // Remove base path for Vercel deployment
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
