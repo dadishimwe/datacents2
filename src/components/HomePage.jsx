@@ -73,24 +73,27 @@ const HomePage = () => {
               className="lg:col-span-7 space-y-8"
             >
               <h1 className="heading-hero">
-                <span className="text-gradient block mb-2">Decoding Financial Patterns</span>
-                <span className="text-foreground block mb-2">Loan Records So</span>
-                <span className="text-gradient block">You Don't Have To</span>
+                <span className="text-gradient block mb-2 "></span>
+                <span className="text-foreground block mb-2 text-5xl leading-relaxed ">Applying data-driven research to understand default risk in P2P lending markets</span>
+                <span className="text-gradient block text-5xl ">DataCents</span>
               </h1>
               
-              <p className="subtitle-lg text-white max-w-2xl">
-                Discover the hidden patterns in peer-to-peer lending that could transform your investment strategy. 
-                Our <span className="text-accent font-semibold">DataCents</span> research analyzed over <span className="text-accent font-semibold">2.2 million loan records</span> 
-                to reveal what really drives success in P2P lending—and what signals trouble ahead.
+              <p className="subtitle-lg text-white max-w-2xl text-lg">
+
+              
+              The global P2P lending market reached USD <span className="text-accent font-semibold">209</span> billion in 2023 with a projected <span className="text-accent font-semibold"> 25% CAGR through 2032 </span>.
+              Despite these growth opportunities, persistent credit risk remains the primary challenge affecting 
+              investor confidence and platform stability across major segments.
+
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="pulse-glow">
+              <div className="flex flex-col sm:flex-row gap-4 ">
+                <Button asChild size="lg" className="pulse-glow h-12 border-1 ">
                   <Link to="/documentation">
                     Explore Research <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg">
+                <Button asChild variant="outline" size="lg" className="h-12 ">
                   <a 
                     href="https://github.com/MIT-Emerging-Talent/ET6-CDSP-group-15-repo" 
                     target="_blank" 
@@ -108,6 +111,7 @@ const HomePage = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="lg:col-span-5 relative lg:-translate-y-8"
             >
+          {/** 
               <div className="glass-effect rounded-2xl p-8 space-y-6 lg:ml-8">
                 <h3 className="heading-sm text-center">Research Impact</h3>
                 <div className="grid grid-cols-2 gap-6">
@@ -129,10 +133,14 @@ const HomePage = () => {
                   </div>
                 </div>
               </div>
+
+          */}
+
             </motion.div>
           </div>
         </div>
       </section>
+
 
       {/* Problem Statement */}
       <section className="py-20 relative">
@@ -142,34 +150,63 @@ const HomePage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center space-y-8"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
           >
-            <h2 className="heading-xl">
-              The <span className="text-gradient">Hidden Challenge</span> of P2P Lending
-            </h2>
-            <p className="subtitle text-white max-w-4xl mx-auto">
-              While peer-to-peer lending has opened up incredible opportunities for both borrowers and investors, 
-              there's a critical blind spot: traditional credit scoring often misses the real risk factors that 
-              determine whether a loan will succeed or fail. We've uncovered the patterns that matter most.
-            </p>
-          </motion.div>
+            {/* LEFT SIDE: Text Content */}
+            <div className="space-y-8 text-left">
+              <h2 className="heading-xl text-gradient">Problem Statement</h2>
+              <p className="subtitle text-white">
+                Despite rapid growth, peer-to-peer lending platforms face a fundamental 
+                challenge: traditional credit scoring systems fail to capture the full 
+                range of borrower behaviors. This blind spot leads to misclassified loans, 
+                higher default rates, reduced investor confidence, and long-term platform 
+                instability.
+              </p>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="mt-16 flex justify-center relative"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl transform rotate-3 scale-105"></div>
-            <img 
-              src={diagram} 
-              alt="How P2P Lending Platforms Work" 
-              className="rounded-2xl shadow-2xl max-w-4xl w-full relative z-10 transform -rotate-1"
-            />
+              <ul className="space-y-4 text-white">
+                <li className="flex items-start">
+                  <span className="text-primary font-bold mr-2">•</span>
+                  High default risk due to incomplete borrower assessment.
+                </li>
+                <li className="flex items-start">
+                  <span className="text-primary font-bold mr-2">•</span>
+                  Investor confidence shaken by unpredictable loan outcomes.
+                </li>
+                <li className="flex items-start">
+                  <span className="text-primary font-bold mr-2">•</span>
+                  Platform sustainability threatened by rising credit risk.
+                </li>
+              </ul>
+
+              <div className="mt-8">
+                <h3 className="heading-lg text-gradient">Research Question</h3>
+                <p className="subtitle text-white">
+                  How can alternative borrower and loan-level features, beyond traditional 
+                  credit scoring, be used to more accurately predict default risk in 
+                  peer-to-peer lending platforms?
+                </p>
+              </div>
+            </div>
+
+            {/* RIGHT SIDE: Image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl transform rotate-3 scale-105"></div>
+              <img 
+                src={diagram} 
+                alt="How P2P Lending Platforms Work" 
+                className="rounded-2xl shadow-2xl w-full relative z-10 transform -rotate-1"
+              />
+            </motion.div>
           </motion.div>
         </div>
       </section>
+
 
       {/* Solution Section */}
       <section className="py-20 relative">
