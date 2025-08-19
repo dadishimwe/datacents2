@@ -73,7 +73,7 @@ const HomePage = () => {
               className="lg:col-span-7 space-y-8"
             >
               <h1 className="heading-hero">
-                <span className="text-gradient block mb-2">We Read 2.2 Million</span>
+                <span className="text-gradient block mb-2">Decoding Financial Patterns</span>
                 <span className="text-foreground block mb-2">Loan Records So</span>
                 <span className="text-gradient block">You Don't Have To</span>
               </h1>
