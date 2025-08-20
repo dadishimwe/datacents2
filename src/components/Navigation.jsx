@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import datacentsLogo from '@/assets/datacents-logo.png'
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -21,11 +22,13 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">P2P</span>
-            </div>
-            <span className="text-xl font-bold text-gradient">MIT Research</span>
+          <Link to="/" className="flex items-center space-x-3">
+            <img 
+              src={datacentsLogo} 
+              alt="DataCents Logo" 
+              className="h-10 w-auto"
+            />
+            <span className="text-xl font-bold text-gradient">DataCents</span>
           </Link>
 
           {/* Desktop Navigation */}
