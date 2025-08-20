@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
@@ -81,6 +81,11 @@ const Dashboard = () => {
     consistency: 88,
     timeliness: 96
   })
+  
+  // Scenario management
+  const [savedScenarios, setSavedScenarios] = useState([])
+  const [currentScenarioName, setCurrentScenarioName] = useState('')
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
 
   // Employment status options
   const employmentOptions = [
@@ -358,33 +363,38 @@ const Dashboard = () => {
     const scenarios = [
       {
         name: 'Optimistic Scenario',
-        description: 'Best-case improvements',
+        description: 'Best-case improvements (credit score +50, DTI -10%, rate -2%)',
         changes: {
           creditScore: Math.min(850, inputData.creditScore + 50),
           dtiRatio: Math.max(10, inputData.dtiRatio - 10),
-          interestRate: Math.max(3, inputData.interestRate - 2)
+          interestRate: Math.max(3, inputData.interestRate - 2),
+          hasCoSigner: true
         },
-        icon: TrendingUp
+        icon: TrendingUp,
+        probability: '15%'
       },
       {
         name: 'Conservative Scenario',
-        description: 'Moderate improvements',
+        description: 'Moderate improvements (credit score +25, DTI -5%, rate -1%)',
         changes: {
           creditScore: Math.min(850, inputData.creditScore + 25),
           dtiRatio: Math.max(15, inputData.dtiRatio - 5),
           interestRate: Math.max(3, inputData.interestRate - 1)
         },
-        icon: TrendingDown
+        icon: TrendingDown,
+        probability: '45%'
       },
       {
         name: 'Worst Case Scenario',
-        description: 'Potential deterioration',
+        description: 'Potential deterioration (credit score -30, DTI +15%, rate +3%)',
         changes: {
           creditScore: Math.max(300, inputData.creditScore - 30),
           dtiRatio: Math.min(100, inputData.dtiRatio + 15),
-          interestRate: Math.min(25, inputData.interestRate + 3)
+          interestRate: Math.min(25, inputData.interestRate + 3),
+          previousDefault: true
         },
-        icon: AlertTriangle
+        icon: AlertTriangle,
+        probability: '25%'
       }
     ]
 
@@ -453,6 +463,43 @@ const Dashboard = () => {
     setMarketTrends(trends)
   }
 
+  // Scenario management functions
+  const saveScenario = () => {
+    if (!currentScenarioName.trim()) return
+    
+    const newScenario = {
+      id: Date.now(),
+      name: currentScenarioName,
+      inputs: { ...inputs },
+      riskScore,
+      riskLevel,
+      timestamp: new Date().toISOString()
+    }
+    
+    setSavedScenarios(prev => [...prev, newScenario])
+    setCurrentScenarioName('')
+    setShowSaveDialog(false)
+  }
+
+  const loadScenario = (scenario) => {
+    setInputs(scenario.inputs)
+  }
+
+  const deleteScenario = (scenarioId) => {
+    setSavedScenarios(prev => prev.filter(s => s.id !== scenarioId))
+  }
+
+  const exportScenario = (scenario) => {
+    const dataStr = JSON.stringify(scenario, null, 2)
+    const dataBlob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(dataBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${scenario.name.replace(/\s+/g, '_')}_scenario.json`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   // Update calculations when inputs change
   useEffect(() => {
     const result = calculateRiskScore(inputs)
@@ -482,10 +529,96 @@ const Dashboard = () => {
     updateMarketTrends()
   }, [inputs])
 
-  // Handle input changes
-  const handleInputChange = (field, value) => {
-    setInputs(prev => ({ ...prev, [field]: value }))
+  // Input validation
+  const validateInput = (field, value) => {
+    const errors = {}
+    
+    switch (field) {
+      case 'loanAmount':
+        if (value < 1000 || value > 50000) {
+          errors.loanAmount = 'Loan amount must be between $1,000 and $50,000'
+        }
+        break
+      case 'interestRate':
+        if (value < 3 || value > 25) {
+          errors.interestRate = 'Interest rate must be between 3% and 25%'
+        }
+        break
+      case 'creditScore':
+        if (value < 300 || value > 850) {
+          errors.creditScore = 'Credit score must be between 300 and 850'
+        }
+        break
+      case 'dtiRatio':
+        if (value < 0 || value > 100) {
+          errors.dtiRatio = 'DTI ratio must be between 0% and 100%'
+        }
+        break
+    }
+    
+    return errors
   }
+
+  // Debounced input handler for performance
+  const debouncedInputChange = useCallback(
+    (field, value) => {
+      const errors = validateInput(field, value)
+      
+      if (Object.keys(errors).length === 0) {
+        setInputs(prev => ({ ...prev, [field]: value }))
+      }
+    },
+    []
+  )
+
+  // Handle input changes with validation
+  const handleInputChange = (field, value) => {
+    debouncedInputChange(field, value)
+  }
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      // Ctrl/Cmd + S to save scenario
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault()
+        if (currentScenarioName.trim()) {
+          saveScenario()
+        } else {
+          setShowSaveDialog(true)
+        }
+      }
+      
+      // Ctrl/Cmd + Z to reset inputs
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault()
+        setInputs({
+          loanAmount: 15000,
+          interestRate: 8.5,
+          creditScore: 720,
+          dtiRatio: 25,
+          employmentStatus: 'employed',
+          loanPurpose: 'debt_consolidation',
+          loanTerm: 36,
+          homeOwnership: 'mortgage',
+          annualIncome: 75000,
+          hasCoSigner: false,
+          previousDefault: false,
+          openCreditLines: 3,
+          recentInquiries: 1
+        })
+      }
+      
+      // Escape to close dialogs
+      if (e.key === 'Escape') {
+        setShowSaveDialog(false)
+        setCurrentScenarioName('')
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyPress)
+    return () => document.removeEventListener('keydown', handleKeyPress)
+  }, [currentScenarioName])
 
   // Get risk level color
   const getRiskLevelColor = (level) => {
@@ -524,9 +657,16 @@ const Dashboard = () => {
             DataCents Default Risk Dashboard
           </h1>
           <p className="subtitle-lg text-white max-w-3xl mx-auto">
-            Advanced risk assessment tool powered by XGBoost machine learning model trained on 2.2 million loan records.
-            Real-time analysis with confidence intervals and scenario modeling.
+            Interactive demo dashboard showcasing our risk assessment capabilities. This is a mock interface demonstrating 
+            how our XGBoost machine learning model would analyze loan default risk using 2.2 million loan records.
+            All calculations are simulated for demonstration purposes.
           </p>
+          <div className="mt-4 p-3 rounded-lg bg-yellow-500/20 border border-yellow-500/30">
+            <p className="text-sm text-yellow-200 text-center">
+              <Info className="inline h-4 w-4 mr-2" />
+              Demo Version - Simulated calculations for demonstration purposes only
+            </p>
+          </div>
         </motion.div>
 
         {/* Model Performance Metrics */}
@@ -738,12 +878,85 @@ const Dashboard = () => {
                           className="w-4 h-4"
                         />
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+                                         </div>
+                   </CardContent>
+                 </Card>
+               
+                 {/* Save/Load Scenarios */}
+                 <Card className="glass-effect border-border mt-4">
+                   <CardHeader>
+                     <CardTitle className="flex items-center gap-2">
+                       <Save className="h-5 w-5" />
+                       Scenario Management
+                     </CardTitle>
+                   </CardHeader>
+                   <CardContent className="space-y-4">
+                     {/* Save Current Scenario */}
+                     <div className="flex gap-2">
+                       <input
+                         type="text"
+                         placeholder="Scenario name..."
+                         value={currentScenarioName}
+                         onChange={(e) => setCurrentScenarioName(e.target.value)}
+                         className="flex-1 p-2 rounded-md bg-slate-800 border border-border text-white text-sm"
+                       />
+                       <Button 
+                         onClick={saveScenario}
+                         disabled={!currentScenarioName.trim()}
+                         size="sm"
+                         className="px-4"
+                       >
+                         Save
+                       </Button>
+                     </div>
+                     
+                     {/* Saved Scenarios */}
+                     {savedScenarios.length > 0 && (
+                       <div className="space-y-2">
+                         <div className="text-sm font-medium text-white">Saved Scenarios:</div>
+                         {savedScenarios.map((scenario) => (
+                           <div key={scenario.id} className="p-2 rounded-lg bg-slate-800/50 border border-border">
+                             <div className="flex items-center justify-between mb-1">
+                               <span className="text-sm font-medium text-white">{scenario.name}</span>
+                               <div className="flex gap-1">
+                                 <Button
+                                   onClick={() => loadScenario(scenario)}
+                                   size="sm"
+                                   variant="outline"
+                                   className="h-6 px-2 text-xs"
+                                 >
+                                   Load
+                                 </Button>
+                                 <Button
+                                   onClick={() => exportScenario(scenario)}
+                                   size="sm"
+                                   variant="outline"
+                                   className="h-6 px-2 text-xs"
+                                 >
+                                   Export
+                                 </Button>
+                                 <Button
+                                   onClick={() => deleteScenario(scenario.id)}
+                                   size="sm"
+                                   variant="outline"
+                                   className="h-6 px-2 text-xs text-red-400 hover:text-red-300"
+                                 >
+                                   Delete
+                                 </Button>
+                               </div>
+                             </div>
+                             <div className="text-xs text-muted-foreground">
+                               Risk: {scenario.riskScore.toFixed(1)}% | {new Date(scenario.timestamp).toLocaleDateString()}
+                             </div>
+                           </div>
+                         ))}
+                       </div>
+                     )}
+                   </CardContent>
+                 </Card>
+               </motion.div>
 
-              {/* Risk Output Display */}
+               {/* Risk Output Display */}
               <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -958,18 +1171,23 @@ const Dashboard = () => {
                       </div>
                       <div className="text-sm text-muted-foreground">Risk Score</div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      {scenario.change > 0 ? (
-                        <ArrowUpRight className="h-4 w-4 text-red-400" />
-                      ) : scenario.change < 0 ? (
-                        <ArrowDownRight className="h-4 w-4 text-green-400" />
-                      ) : (
-                        <Minus className="h-4 w-4 text-gray-400" />
-                      )}
-                      <span className={scenario.change > 0 ? 'text-red-400' : scenario.change < 0 ? 'text-green-400' : 'text-gray-400'}>
-                        {scenario.change > 0 ? '+' : ''}{scenario.change.toFixed(1)}% change
-                      </span>
-                    </div>
+                                         <div className="flex items-center justify-between text-sm">
+                       <div className="flex items-center gap-2">
+                         {scenario.change > 0 ? (
+                           <ArrowUpRight className="h-4 w-4 text-red-400" />
+                         ) : scenario.change < 0 ? (
+                           <ArrowDownRight className="h-4 w-4 text-green-400" />
+                         ) : (
+                           <Minus className="h-4 w-4 text-gray-400" />
+                         )}
+                         <span className={scenario.change > 0 ? 'text-red-400' : scenario.change < 0 ? 'text-green-400' : 'text-gray-400'}>
+                           {scenario.change > 0 ? '+' : ''}{scenario.change.toFixed(1)}% change
+                         </span>
+                       </div>
+                       <Badge variant="outline" className="text-xs">
+                         {scenario.probability} probability
+                       </Badge>
+                     </div>
                   </CardContent>
                 </Card>
               ))}
@@ -1070,20 +1288,53 @@ const Dashboard = () => {
           </Card>
         </motion.div>
 
-        {/* Enhanced Disclaimer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="mt-8 text-center"
-        >
-          <p className="text-xs text-muted-foreground max-w-3xl mx-auto">
-            This advanced dashboard utilizes XGBoost machine learning algorithms trained on 2.2 million loan records. 
-            Results include confidence intervals and prediction intervals for enhanced accuracy. 
-            For educational and research purposes only. Actual loan terms may vary based on lender criteria and market conditions.
-            Model performance: ROC AUC {modelMetrics.rocAuc}, Precision {modelMetrics.precision}, Recall {modelMetrics.recall}.
-          </p>
-        </motion.div>
+                 {/* Keyboard Shortcuts Help */}
+         <motion.div
+           initial={{ opacity: 0 }}
+           animate={{ opacity: 1 }}
+           transition={{ delay: 0.9 }}
+           className="mt-6"
+         >
+           <Card className="glass-effect border-border">
+             <CardHeader>
+               <CardTitle className="flex items-center gap-2 text-sm">
+                 <Settings className="h-4 w-4" />
+                 Keyboard Shortcuts
+               </CardTitle>
+             </CardHeader>
+             <CardContent>
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                 <div className="flex items-center gap-2">
+                   <kbd className="px-2 py-1 bg-slate-700 rounded text-white">Ctrl/Cmd + S</kbd>
+                   <span className="text-muted-foreground">Save current scenario</span>
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <kbd className="px-2 py-1 bg-slate-700 rounded text-white">Ctrl/Cmd + Z</kbd>
+                   <span className="text-muted-foreground">Reset to default values</span>
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <kbd className="px-2 py-1 bg-slate-700 rounded text-white">Esc</kbd>
+                   <span className="text-muted-foreground">Close dialogs</span>
+                 </div>
+               </div>
+             </CardContent>
+           </Card>
+         </motion.div>
+
+         {/* Enhanced Disclaimer */}
+         <motion.div
+           initial={{ opacity: 0 }}
+           animate={{ opacity: 1 }}
+           transition={{ delay: 1 }}
+           className="mt-8 text-center"
+         >
+           <p className="text-xs text-muted-foreground max-w-3xl mx-auto">
+             This is a demonstration dashboard showcasing our risk assessment capabilities. All calculations are simulated 
+             and based on realistic algorithms for demonstration purposes only. In a production environment, this would 
+             integrate with actual XGBoost models trained on real loan data. Model performance metrics shown are illustrative. 
+             For educational and research purposes only. Not intended for actual financial decision-making.
+           </p>
+         </motion.div>
       </div>
     </div>
   )
