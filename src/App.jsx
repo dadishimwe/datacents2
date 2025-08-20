@@ -9,6 +9,7 @@ import Documentation from './components/Documentation'
 import AboutTeam from './components/AboutTeam'
 import FurtherStudy from './components/FurtherStudy'
 import Contact from './components/Contact'
+import Dashboard from './components/Dashboard'
 import ErrorBoundary from './components/ErrorBoundary'
 
 // Hooks
@@ -33,6 +34,7 @@ function App() {
               <Route path="/about" element={<AboutTeam />} />
               <Route path="/further-study" element={<FurtherStudy />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="*" element={<HomePage />} />
             </Routes>
           </main>
