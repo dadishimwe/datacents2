@@ -73,27 +73,23 @@ const HomePage = () => {
               className="lg:col-span-7 space-y-8"
             >
               <h1 className="heading-hero">
-                <span className="text-gradient block mb-2 "></span>
-                <span className="text-foreground block mb-2 text-5xl leading-relaxed ">Applying data-driven research to understand default risk in P2P lending markets</span>
-                <span className="text-gradient block text-5xl ">DataCents</span>
+                <span className="text-foreground block mb-2 text-5xl leading-relaxed">Applying data-driven research to understand default risk in P2P lending markets</span>
+                <span className="text-gradient block text-5xl">DataCents</span>
               </h1>
               
               <p className="subtitle-lg text-white max-w-2xl text-lg">
-
-              
-              The global P2P lending market reached USD <span className="text-accent font-semibold">209</span> billion in 2023 with a projected <span className="text-accent font-semibold"> 25% CAGR through 2032 </span>.
-              Despite these growth opportunities, persistent credit risk remains the primary challenge affecting 
-              investor confidence and platform stability across major segments.
-
+                The global P2P lending market reached USD <span className="text-accent font-semibold">209</span> billion in 2023 with a projected <span className="text-accent font-semibold">25% CAGR through 2032</span>.
+                Despite these growth opportunities, persistent credit risk remains the primary challenge affecting
+                investor confidence and platform stability across major segments.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 ">
-                <Button asChild size="lg" className="pulse-glow h-12 border-1 ">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button asChild size="lg" className="pulse-glow h-12 border-1">
                   <Link to="/documentation">
                     Explore Research <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-12 ">
+                <Button asChild variant="outline" size="lg" className="h-12">
                   <a 
                     href="https://github.com/MIT-Emerging-Talent/ET6-CDSP-group-15-repo" 
                     target="_blank" 
@@ -111,7 +107,8 @@ const HomePage = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="lg:col-span-5 relative lg:-translate-y-8"
             >
-          {/** 
+              {/* Research Impact section commented out for future implementation */}
+              {/* 
               <div className="glass-effect rounded-2xl p-8 space-y-6 lg:ml-8">
                 <h3 className="heading-sm text-center">Research Impact</h3>
                 <div className="grid grid-cols-2 gap-6">
@@ -133,9 +130,7 @@ const HomePage = () => {
                   </div>
                 </div>
               </div>
-
-          */}
-
+              */}
             </motion.div>
           </div>
         </div>
