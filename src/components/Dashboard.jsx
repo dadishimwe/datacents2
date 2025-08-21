@@ -87,6 +87,71 @@ const Dashboard = () => {
   const [currentScenarioName, setCurrentScenarioName] = useState('')
   const [showSaveDialog, setShowSaveDialog] = useState(false)
 
+  // Demo mode and performance indicators
+  const [isDemoMode, setIsDemoMode] = useState(false)
+  const [processingTime, setProcessingTime] = useState(0.2)
+  const [predictionsToday, setPredictionsToday] = useState(1247)
+  const [modelUptime, setModelUptime] = useState(99.2)
+  const [lastPrediction, setLastPrediction] = useState('0.3s ago')
+
+  // Demo scenarios for presentation
+  const demoScenarios = [
+    {
+      name: 'Low Risk Borrower',
+      inputs: {
+        loanAmount: 25000,
+        interestRate: 6.5,
+        creditScore: 780,
+        dtiRatio: 18,
+        employmentStatus: 'employed',
+        loanPurpose: 'debt_consolidation',
+        loanTerm: 36,
+        homeOwnership: 'own',
+        annualIncome: 85000,
+        hasCoSigner: false,
+        previousDefault: false,
+        openCreditLines: 2,
+        recentInquiries: 0
+      }
+    },
+    {
+      name: 'High Risk Borrower',
+      inputs: {
+        loanAmount: 75000,
+        interestRate: 15.5,
+        creditScore: 620,
+        dtiRatio: 45,
+        employmentStatus: 'self_employed',
+        loanPurpose: 'business',
+        loanTerm: 60,
+        homeOwnership: 'rent',
+        annualIncome: 45000,
+        hasCoSigner: false,
+        previousDefault: true,
+        openCreditLines: 8,
+        recentInquiries: 4
+      }
+    },
+    {
+      name: 'Moderate Risk Borrower',
+      inputs: {
+        loanAmount: 50000,
+        interestRate: 10.5,
+        creditScore: 720,
+        dtiRatio: 32,
+        employmentStatus: 'employed',
+        loanPurpose: 'home_improvement',
+        loanTerm: 48,
+        homeOwnership: 'mortgage',
+        annualIncome: 65000,
+        hasCoSigner: true,
+        previousDefault: false,
+        openCreditLines: 4,
+        recentInquiries: 2
+      }
+    }
+  ]
+
   // Employment status options
   const employmentOptions = [
     { value: 'employed', label: 'Employed' },
@@ -576,6 +641,39 @@ const Dashboard = () => {
     debouncedInputChange(field, value)
   }
 
+  // Demo mode functions
+  const loadDemoScenario = (scenarioIndex) => {
+    const scenario = demoScenarios[scenarioIndex]
+    setInputs(scenario.inputs)
+    setCurrentScenarioName(scenario.name)
+    
+    // Simulate processing time
+    setProcessingTime(0.2 + Math.random() * 0.3)
+    setLastPrediction('0.3s ago')
+    setPredictionsToday(prev => prev + 1)
+  }
+
+  const toggleDemoMode = () => {
+    setIsDemoMode(!isDemoMode)
+    if (!isDemoMode) {
+      // Load first demo scenario when entering demo mode
+      loadDemoScenario(0)
+    }
+  }
+
+  // Update performance indicators periodically
+  useEffect(() => {
+    if (isDemoMode) {
+      const interval = setInterval(() => {
+        setPredictionsToday(prev => prev + Math.floor(Math.random() * 3))
+        setLastPrediction(`${(Math.random() * 0.5).toFixed(1)}s ago`)
+        setProcessingTime(0.2 + Math.random() * 0.3)
+      }, 5000)
+      
+      return () => clearInterval(interval)
+    }
+  }, [isDemoMode])
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -667,6 +765,55 @@ const Dashboard = () => {
               Demo Version - Simulated calculations for demonstration purposes only
             </p>
           </div>
+
+          {/* Demo Mode Toggle and Performance Indicators */}
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button
+              onClick={toggleDemoMode}
+              variant={isDemoMode ? "default" : "outline"}
+              className={`${isDemoMode ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
+            >
+              {isDemoMode ? 'Exit Demo Mode' : 'Enter Demo Mode'}
+            </Button>
+            
+            {isDemoMode && (
+              <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-green-400" />
+                  <span className="text-green-400">Processing: {processingTime.toFixed(1)}s</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Database className="h-4 w-4 text-blue-400" />
+                  <span className="text-blue-400">Today: {predictionsToday.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-purple-400" />
+                  <span className="text-purple-400">Uptime: {modelUptime}%</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-orange-400" />
+                  <span className="text-orange-400">Last: {lastPrediction}</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Demo Scenario Buttons */}
+          {isDemoMode && (
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {demoScenarios.map((scenario, index) => (
+                <Button
+                  key={index}
+                  onClick={() => loadDemoScenario(index)}
+                  variant="outline"
+                  size="sm"
+                  className="text-xs"
+                >
+                  {scenario.name}
+                </Button>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* Model Performance Metrics */}
@@ -997,9 +1144,15 @@ const Dashboard = () => {
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <div className={`text-3xl font-bold ${getRiskLevelColor(riskLevel)}`}>
+                          <motion.div 
+                            key={riskScore}
+                            initial={{ scale: 1.1, opacity: 0.8 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                            className={`text-3xl font-bold ${getRiskLevelColor(riskLevel)}`}
+                          >
                             {riskScore.toFixed(1)}%
-                          </div>
+                          </motion.div>
                           <div className="text-sm text-muted-foreground">
                             Default Risk
                           </div>
