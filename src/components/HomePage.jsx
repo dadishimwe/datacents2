@@ -73,8 +73,8 @@ const HomePage = () => {
               className="lg:col-span-7 space-y-8"
             >
               <h1 className="heading-hero">
-                <span className="text-foreground block mb-2 text-5xl leading-relaxed">Applying data-driven research to understand default risk in P2P lending markets</span>
-                <span className="text-gradient block text-5xl">DataCents</span>
+                <span className="text-foreground block mb-2 text-5xl leading-relaxed text-gradient">Applying data-driven research to understand default risk in P2P lending markets</span>
+                <span className=" block text-5xl">DataCents</span>
               </h1>
               
               <p className="subtitle-lg text-white max-w-2xl text-lg">
@@ -149,7 +149,7 @@ const HomePage = () => {
           >
             {/* LEFT SIDE: Text Content */}
             <div className="space-y-8 text-left">
-              <h2 className="heading-xl text-gradient">Problem Statement</h2>
+              <h2 className="heading-xl text-[#BFA242]">Problem Statement</h2>
               <p className="subtitle text-white">
                 Despite rapid growth, peer-to-peer lending platforms face a fundamental 
                 challenge: traditional credit scoring systems fail to capture the full 
