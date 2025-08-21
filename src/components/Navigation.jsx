@@ -29,7 +29,7 @@ const Navigation = () => {
               alt="DataCents Logo" 
               className="h-10 w-auto"
             />
-            <span className="text-xl font-bold text-gradient">MIT Research</span>
+            <span className="text-xl font-bold text-[#BFA242]">MIT Research</span>
           </Link>
 
           {/* Desktop Navigation */}

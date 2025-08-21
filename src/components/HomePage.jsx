@@ -74,7 +74,7 @@ const HomePage = () => {
             >
               <h1 className="heading-hero">
                 <span className="text-foreground block mb-2 text-5xl leading-relaxed text-gradient">Applying data-driven research to understand default risk in P2P lending markets</span>
-                <span className=" block text-5xl">DataCents</span>
+                <span className="text-[#BFA242] block text-5xl">DataCents</span>
               </h1>
               
               <p className="subtitle-lg text-white max-w-2xl text-lg">
@@ -174,7 +174,7 @@ const HomePage = () => {
               </ul>
 
               <div className="mt-8">
-                <h3 className="heading-lg text-gradient">Research Question</h3>
+                <h3 className="heading-lg text-[#BFA242]">Research Question</h3>
                 <p className="subtitle text-white">
                   How can alternative borrower and loan-level features, beyond traditional 
                   credit scoring, be used to more accurately predict default risk in 
@@ -313,7 +313,7 @@ const HomePage = () => {
             className="text-center space-y-8 mb-16"
           >
             <h2 className="heading-xl">
-              Meet the <span className="text-gradient">Data Detectives</span>
+              Meet the <span className="text-[#BFA242]">Data Detectives</span>
             </h2>
             <p className="subtitle text-white max-w-3xl mx-auto">
               Our team of <span className="text-accent font-semibold">researchers and analysts</span> spent months diving deep into the data 
