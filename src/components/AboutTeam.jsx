@@ -22,12 +22,12 @@ const AboutTeam = () => {
       image: noorelsalam
     },
     {
-      name: "Madiha Maikzada",
-      role: "Data Analyst",
+      name: "Madiha Malikzada",
+      role: "Data Data Scientist and Software Engineer",
       bio: "Expert in financial data analysis and risk modeling. Brings deep understanding of P2P lending markets and feature engineering.",
       skills: ["Financial Analysis", "Risk Modeling", "Statistics", "Python"],
-      linkedin: "#",
-      github: "#",
+      linkedin: "https://www.linkedin.com/in/madiha-malik/",
+      github: "https://github.com/MadiMalik",
       email: "madiha.maikzada@datacents.com",
       image: madiha
     },
